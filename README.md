@@ -2,7 +2,7 @@
 
 ## 2018
 
-* [2018.01.28 **AceBear 2018**](2018-01-28-acebear)
+* [2018-01-28 **AceBear 2018**](2018-01-28-acebear)
 
 ## 2017
 * [2017-10-01 **DefCamp CTF Qualification 2017**](2017-10-01-defcampctf)
