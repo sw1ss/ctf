@@ -1,6 +1,7 @@
 ﻿# random to win (Crypto)
 Author: MH
-In this challenge I had to break an encryption based on modular arithmetic.
+
+In this challenge I had to break an encryption based on modular arithmetics.
 
 ## Challenge description and material
 The text was simply:
@@ -9,7 +10,7 @@ The text was simply:
 
 ### The service
 When we connect to the service, we see the following:
-```bash
+```text
 ********************Menu********************
 * 1 - Test                                 *
 * 2 - Submit                               *
@@ -17,7 +18,7 @@ When we connect to the service, we see the following:
 Your choice:
 ```
 When we choose `1`, we can send two messages, and get their cipher text back. After two messages the connection is closed.
-```bash
+```text
 Your choice: 1
 Message: some message
 Ciphertext: 1564552006508669667564127612034763595999452081288572539869892029772571219426403885663317190197278165781496601557944708701
@@ -26,14 +27,14 @@ Ciphertext: 15645520065086696675641276120347635959994520812885725398698920297725
 ```
 
 When we choose `2`, we are presented with a cipher text. We are expected to answer with the clear text, if it is not correct, the connection is closed immediately. 
-```bash 
+```text 
 Your choice: 2
 Ciphertext: 996660017562247680971542590546880209061115949188248581803031239449227981297561093703132462444965218158391992414010827685
 test123
 ```
 
 ### The code
-Fortunately the download contains the full code of the server (expect `h`, `p` and `flag`). It's even prepared to run locally, which was nice done, because it was much faster to test the attack locally.
+Fortunately the download contains the full code of the server (except `h`, `p` and `flag`). It's even prepared to run locally, which was nice, because it was very convenient to test the attack locally.
 The functions `test` and `submit` are where the important stuff happens.
 ```python
 import os
@@ -114,7 +115,7 @@ if __name__=='__main__':
 ### Master plan
 My master plan to solve this challenge was to recover `h` and `p` with the `test` option of the service and then use that knowledge to decrypt the cipher text of the `submit` option. I didn't know in advance how to solve those steps, but it meets the eye that in the `test` function, the random number `r` is in the range `[0, 222222]` which seems "bruteforceable". Also we can submit two messages for the same `r`. And `h` and `p` are constant for all requests. Therefore I was pretty sure that we must calculate them first.
 
-### Step 1: Calculate p
+### Step 1: Calculate `p`
 First one needs to notice on line 10 of the provided code `assert len(str(p)) == 121`, i.e. `p` has 121 digits.
 In general this step is about the following part of the provided code:
 ```python
@@ -129,13 +130,12 @@ def test(self):
         self.request.sendall("Ciphertext: %s\n" %c)
         i -=1
 ```
-Since we can send two messages for the same choice of `r`, we know that `r*h` is the same for both messages we send, while we can control the offset `m`. We also know `c`.
+Since we can send two messages for the same random `r`, we know that `r*h` is the same for both messages we send, while we can control the offset `m`. We also know `c`.
 To take advantage of that, I derived the following:
 ```text
 c1 = (r*h + m1) % p
 c2 = (r*h + m2) % p
-=>
-c1 - c2 = (r*h + m1) % p - (r*h + m2) % p
+=> c1 - c2 = (r*h + m1) % p - (r*h + m2) % p
 ```
 Using the modulo rule `(a - b) % p <=> (a % p - b % p) % p` backwards:
 ```text
@@ -145,8 +145,8 @@ Using the modulo rule `(a - b) % p <=> (a % p - b % p) % p` backwards:
 ```
 That means that gives us a condition (`(c1 - c2) % p = (m1 - m2) % p`) that the correct `p` will fulfill for every two messages `m1`, `m2` we send.
 
-Since we know that `p` has `121` digits, the idea was basically to start with `10**120` as the first guess for `p`. Then I choose `m1` and `m2` in a way, that we have a wrap around, i.e. that `c2 < c1`. The reason for that intuitive decision was, that in that case, the modulo `p` has an effect, while with two numbers `m1,m2 < p` it doesn't and so that condition holds whenever `(c1 - c2) % p` is the same as the difference of the two messages. To be precise, I chose `m1 = 0, m2 = 10**120`. Since I don't know what `p` is, I had to check in a loop that `c2 < c1`, slightly modifying `m2` (but it also depends on which random number `r` is chosen, so multiple tries will be successful). 
-Then if `c2 < c1` I changed `p` so that this condition is fulfilled. (I don't know if it is possible to miss the right `p` this way, but it worked locally as well as on their server)
+Since we know that `p` has `121` digits, the idea was basically to start with `10**120` as the first guess for `p`. Then I choose `m1` and `m2` in a way, that we have a wrap around, i.e. that `c2 < c1`. The reason for that intuitive decision was, that in that case, the modulo `p` has an effect, while with two numbers `m1,m2 < p` it doesn't and so that condition holds whenever `(c1 - c2) % p` is the same as the difference of the two messages. To be precise, I chose `m1 = 0, m2 = 10**120`. Since I don't know what `p` is, I had to check in a loop that `c2 < c1`, slightly modifying `m2` every iteration (but it also depends on which random number `r` is chosen, so multiple tries have a good chance to be successful). 
+Then if `c2 < c1` I changed `p` the following way, so that this condition is fulfilled. (I'm not sure if it is possible to miss the right `p` this way, but it worked locally as well as on their server)
 ```python
 while diffM != diffC:
 	p += abs(diffM - diffC)
@@ -207,12 +207,17 @@ Which gave me the following number `p`:
 `2129236650498506197214865121017813676962270980934541379925587741818174020229784960110052122450619093813474017151250421361`
 
 ### Step 2: Calculate `h`
-My plan here was to use the message `0` multiple times (only one time for the same `r`, because they are identical anyways). This gives me equations of the form:
+My plan here was to send the message `0` multiple times (only once for the same `r`, because they are identical anyways). This gives me equations of the form:
+
 `c = (r * h) % p`
-Where we don't know either `r` or `h`. But we know that `r` is in the range `[0, 222222]`, so we bruteforce every `r` and check with other tries (which have different `r`, but must have the same `h`!), until only one choice of `h` remains. That was very fast, since `p` is so large and `h` was a bit smaller, there were seldom more than 3 tries necessary.
-For a chosen `r = r1`, we can calculate 
-`c = (r * h) % p`
+
+Where we don't know either `r` or `h`. But we know that `r` is in the range `[0, 222222]`, so we bruteforce every `r` and check with other tries (which have different `r`, but must have the same `h`!), until only one choice of `h` remains. That was very fast, since `p` is so large and `h` was significantly smaller, there were seldom more than 3 tries necessary.
+For a fixed `r = r1`, we can calculate 
+
+`c = (r1 * h) % p`
+
 simply by computing the modular inverse using the extended euclidean algorithm `rInv = modinv(r, p)`, and then computing:
+
 `h = (c * rInv) % p`
 
 This is done in the following code:
@@ -299,7 +304,7 @@ That gave me the following `h`:
 `11305546770736405378819894875529407145124231011999396912086973074056791191623579252993880901245430834195596982773094`
 
 ### Step 3: Finally calculate `m`
-Now we can finally worry about braking the encryption of the `submit` part. Remember that that looked like the following:
+Now we can finally worry about breaking the encryption of the `submit` part. Remember that that looked like the following:
 ```python
 def submit(self):
 	 m = random.randint(10**10,10**12)
@@ -311,8 +316,10 @@ def submit(self):
 	 if(m == int(x)):
 	     self.request.sendall(flag)
 ```
-Now the problem here is, that `m` as well as `r` are unknown. Also their range is now `[10**10, 10**12]` and we only have one equation:
+Now the problem here is, that `m` as well as `r` are random. Also their range is now `[10**10, 10**12]` and we only have one equation:
+
 `c = (r * h + m) % p`
+
 Where we know know `c, h, p`.
 
 To calculate that, I used the following derivations:
@@ -326,7 +333,7 @@ Where we know `m % h = m`, because `m <= 10**12 < h`. Since `h << p`, and `r` is
 `m = c % h`
 And then add `p` until `m` is in the range `[10**10, 10**12]`. That works good, because the range `[10**10, 10**12]` is quite small compared to the size of `p`.
 
-This I did in the following code:
+This I realized in the following code:
 ```python
 rem = remote(ip, 33337)
 rem.recvuntil('Your choice: ')
