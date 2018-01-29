@@ -441,7 +441,7 @@ def getC():
     rem.close()
     return c
 
-# functions to calculat modular inverse
+# functions to calculate modular inverse
 
 def extended_gcd(aa, bb):
     lastremainder, remainder = abs(aa), abs(bb)
