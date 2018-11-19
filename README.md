@@ -1,13 +1,11 @@
 # CTF writeups sw1ss
 
 ## 2018
-* [2018-11-19 **RITSEC CTF**](2018-11-19-RITSEC)
+* [2018-11-19 **RITSEC CTF 2018**](2018-11-19-RITSEC)
 * [2018-09-09 **ICON 2018 CTF Quals**](2018-09-09-ICON-CTF-Quals)
 * [2018-02-26 **TAMUctf 2018**](2018-02-26-tamuctf)
 * [2018-02-23 **NeverLAN 2018**](2018-02-23-neverlan)
 * [2018-01-28 **AceBear 2018**](2018-01-28-acebear)
-* [2018-11-19 **RITSEC 2018**](2018-11-19-RITSEC)
-
 
 ## 2017
 * [2017-10-01 **DefCamp CTF Qualification 2017**](2017-10-01-defcampctf)
