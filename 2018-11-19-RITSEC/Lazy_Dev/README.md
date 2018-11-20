@@ -7,7 +7,7 @@ Author: jok3r
 This challenge was built on "The Tangled Web"
 
 # Solution
-In the Stars.html file there was an additional hint to check out devsrule.php and an order to do fancy stuff there.Same challenges as The Tangled Web. See Hint on Stars.html 
+In the Stars.html file there was an additional hint to check out devsrule.php and an order to do fancy stuff there.
 > Getting remote access is so much work. Just do fancy things on devsrule.php 
 
 There we find another message mentioning that the parameter was magic. Doing some fancy stuff resulted in the following winning payload
