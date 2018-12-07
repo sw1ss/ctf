@@ -1,7 +1,7 @@
 # CTF writeups sw1ss
 
 ## 2018
-
+* [2018-12-09 **hxp CTF 2018**](2018-12-09-hxpCTF2018)
 * [2018-11-26 **tuCTF 2018**](2018-11-26-tuctf)
 * [2018-11-19 **RITSEC CTF 2018**](2018-11-19-RITSEC)
 * [2018-09-09 **ICON 2018 CTF Quals**](2018-09-09-ICON-CTF-Quals)
