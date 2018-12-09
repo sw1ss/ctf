@@ -81,6 +81,6 @@ We get back an image. Let's copy the original HTML and alter the JavaScript part
 ```
 ![OTP](otp.png "OTP")
 
-Now we just need to log in an catch the flag:
+Now we just need to log in and catch the flag:
 
 ![Flag](flag.png "Flag")
