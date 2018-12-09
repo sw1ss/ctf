@@ -63,7 +63,7 @@ Let's try to subscribe to **$SYS/#**
 ![SYS](sys.png "SYS")
 
 We can see an interesting topic: **$internal/admin/webcam**
-If we subscribe to this topic we get do not get content back or do we?
+If we subscribe to this topic we do not get content back or do we?
 Let's fire up burp to see what's going on regarding websockets.
 
 ![Webcam](webcam.png "Webcam")
