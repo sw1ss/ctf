@@ -18,7 +18,7 @@ exec > /dev/tty
 Now we spawned a regular bash shell.
 
 ## Step 2: Deeply hidden
-When listing the files I found one called file:
+When listing the files I found one called flag:
 
 ```bash
 ls
@@ -32,7 +32,7 @@ cat flag
 almost there ;-)_1t_s_n0t_so_ea4y}
 ```
 
-Now I only needed to print the 'full' file:
+Now I only needed to print the 'full' file not only the characters after the carriage return:
 
 ```bash
 cat -A flag
